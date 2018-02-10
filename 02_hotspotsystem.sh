@@ -305,7 +305,11 @@ mkchilliconf() {
         ## Domain suffixes the client can access without first authenticating (walled garden)
         ## Host on the domain are checked by spying on DNS requests, so this does work for multi-homed hosts too.
         ##uci set chilli.@chilli[0].uamdomain=".paypal.com,.paypalobjects.com,.worldpay.com,.rbsworldpay.com,.adyen.com,.hotspotsystem.com"
-        uci set chilli.@chilli[0].uamdomain="paypal.com,paypalobjects.com,worldpay.com,rbsworldpay.com,adyen.com,hotspotsystem.com,geotrust.com,triodos.nl,asnbank.nl,knab.nl,regiobank.nl,snsbank.nl"
+        A='paypal.com,paypalobjects.com,worldpay.com,rbsworldpay.com,adyen.com,hotspotsystem.com,geotrust.com,triodos.nl,asnbank.nl,knab.nl,regiobank.nl,snsbank.nl'
+        B='doubleclick.net,googlevideo.com,googlesyndication.com,ytimg.com,youtube.com'
+        C='voxmeter.dk,catglobe.com,voxmeter.catglobe.com'
+        uci set chilli.@chilli[0].uamdomain="${A},${B},${C}"
+
 
         ## Various debug and optimization values
         ## swap input and output octets
