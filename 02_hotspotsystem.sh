@@ -32,9 +32,13 @@ mkfixdate() {
     if [ "$PERFORM" == "y" ]; then
         date
         echo "uci set system.@system[0].timezone='UTC'"
+        echo "uci delete system.@system[0].zonename"
+        echo "/etc/init.d/system restart"
 
         uci set system.@system[0].timezone='UTC'
+        uci delete system.@system[0].zonename
         uci commit system
+        /etc/init.d/system restart
         date
     else
         echo -e "\nSkipping"
