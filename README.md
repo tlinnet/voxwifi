@@ -240,7 +240,7 @@ ssh root@192.168.5.1
 Then change location to new "Loc. ID" X
 ```bash
 uci show chilli | grep nasid
-uci set chilli.@chilli[0].radiusnasid='tlinnet_7'
+uci set chilli.@chilli[0].radiusnasid='USERNAME_X'
 uci commit chilli
 ```
 
