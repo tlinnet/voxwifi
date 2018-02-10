@@ -29,5 +29,32 @@ mk4g() {
 
 }
 
+
+mkfixnetwork() {
+    echo -e "\nThe HUAWEI E3372 LTE 4G USB modem will make its own subnet 192.168.8.1."
+    echo -e "Therefore we need to change to another subnet. Remember, the subnet on your"
+    echo -e "own internet router is probably 192.168.0.x or 192.168.1.x or similar"
+    echo -e "\nThe script will automatically change to 192.168.5.x"
+
+    unset PERFORM
+    read -p "Should I perform this? [$DEFPERFORM]:" PERFORM
+    PERFORM=${PERFORM:-$DEFPERFORM}
+    echo -e "You entered: $PERFORM"
+    if [ "$PERFORM" == "y" ]; then
+        echo -e "\nChanging wifi"
+        echo "uci show network"
+        echo "uci set network.lan.ipaddr=192.168.5.1"
+        echo "uci commit network && reboot"
+
+        uci show network
+        uci set network.lan.ipaddr=192.168.5.1
+        uci commit network && reboot
+    else
+        echo -e "\nSkipping"
+    fi
+}
+
+
 # Perform
 mk4g
+mkfixnetwork

@@ -45,6 +45,31 @@ mkfixdate() {
     fi
 }
 
+mkfixwifi() {
+    echo -e "\nWe will change the Wifi name to 'Free VoxWifi'"
+
+    unset PERFORM
+    read -p "Should I perform this? [$DEFPERFORM]:" PERFORM
+    PERFORM=${PERFORM:-$DEFPERFORM}
+    echo -e "You entered: $PERFORM"
+    if [ "$PERFORM" == "y" ]; then
+        echo -e "\nChanging wifi"
+        echo "uci show wireless"
+        echo "uci set wireless.@wifi-iface[0].ssid='.Free VoxWifi'"
+        echo "uci set wireless.@wifi-iface[0].encryption='none'"
+        echo "uci commit wireless"
+        echo "wifi"
+
+        uci show wireless
+        uci set wireless.@wifi-iface[0].ssid='.Free VoxWifi'
+        uci set wireless.@wifi-iface[0].encryption='none'
+        uci commit wireless
+        wifi
+    else
+        echo -e "\nSkipping"
+    fi
+}
+
 mkfixnetstate() {
     echo -e "\nWe have to fix a bug in /etc/hotplug.d/iface/00-netstate"
 
@@ -346,6 +371,7 @@ mkchilliconf() {
 # Perform
 mkchilli
 mkfixdate
+mkfixwifi
 mkfixnetstate
 mkchillihotplug
 mkchilliconf
