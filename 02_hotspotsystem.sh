@@ -341,7 +341,7 @@ mkchilliconf() {
 
 # Perform
 mkchilli
-#mkfixdate
+mkfixdate
 mkfixnetstate
 mkchillihotplug
 mkchilliconf
