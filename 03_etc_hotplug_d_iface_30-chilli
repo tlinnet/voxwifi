@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# If action is different from ifup and ifdown, then exit
+if [ "$ACTION" != "ifup" ] && [ "$ACTION" != "ifdown" ]; then exit 0; fi
+
+# Check if chilli is disabled, if True, then exit
+CHILLIDISABLED=`uci get chilli_hotplug.@chilli[0].disabled`
+# If variable does not exist, enable by default
+if [ -z "$CHILLIDISABLED" ]; then CHILLIDISABLED=0; fi
+
+# Get the chilli wan interface
+CHILLIWAN=`uci get chilli_hotplug.@chilli[0].wan`
+# Get if the interface is up
+CHILLIWANUP=`uci -P /var/state get network.${CHILLIWAN}.up`
+# Should firewall be enabled for wan?
+WANFIREWALLENABLED=`uci get chilli_hotplug.@chilli[0].wan_firewall_enabled`
+# Get the net
+CHILLINET=`uci get chilli.@chilli[0].net`
+CHILLIWANDEV=`uci -P /var/state get network.${CHILLIWAN}.device`
+CHILLIWANNET=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f2 | cut -d" " -f1`
+CHILLIWANMASK=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f4`
+
+if [ "$CHILLIDISABLED" == "1" ]; then
+    logger -t chilli "Chilli is disabled, uci get chilli_hotplug.@chilli[0].disabled, will not start chilli. $ACTION $INTERFACE ($DEVICE)"
+    logger -t chilli "CHILLIWAN=$CHILLIWAN, CHILLIWANUP=$CHILLIWANUP, WANFIREWALLENABLED=$WANFIREWALLENABLED. $ACTION $INTERFACE ($DEVICE)"
+    # Exit
+    exit 0
+fi
+
+if [ "$ACTION" == "ifup" ]; then
+    echo "Chilli hotplug ifup for $INTERFACE ($DEVICE). CHILLIWAN=$CHILLIWAN, CHILLIWANUP=$CHILLIWANUP, WANFIREWALLENABLED=$WANFIREWALLENABLED."
+    logger -t chilli "Chilli hotplug ifup for $INTERFACE ($DEVICE). CHILLIWAN=$CHILLIWAN, CHILLIWANUP=$CHILLIWANUP, WANFIREWALLENABLED=$WANFIREWALLENABLED."
+    #if printf "$INTERFACE" | grep -Eqe "^wan"; then
+    if [ "$INTERFACE" == "$CHILLIWAN" ] && [ "$CHILLIWANUP" == "1" ]; then
+
+        # Then count number of processes
+        PROCESSCOUNT=`ps -w | grep -v grep | grep -cw chilli`
+        if [ "$PROCESSCOUNT" == "0" ]; then
+            logger -t chilli "ifup for $INTERFACE ($DEVICE). No chilli deamon is running, so I will start it."
+            /etc/init.d/chilli restart
+        else
+            logger -t chilli "ifup for $INTERFACE ($DEVICE). Chilli deamon is already running, so I will NOT start it."
+        fi
+
+        # First delete the firewall rule
+        sed -i '/iptables -I FORWARD 1 -s /d' /etc/chilli/up.sh
+
+        if [ "$WANFIREWALLENABLED" == 1 ]; then
+            # Makre firewall rule. Add it as the very first rule with the notion: 1.
+            echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT"
+            logger -t firewall "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT"
+            #iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT
+            # Add it to firewall user file
+            echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT" >> /etc/chilli/up.sh
+        fi
+
+    else
+        logger -t chilli "Not starting chilli, since $INTERFACE is not $CHILLIWAN"
+    fi
+
+elif [ "$ACTION" == "ifdown" ]; then
+    echo "Chilli hotplug ifdown for $INTERFACE ($DEVICE)"
+    logger -t chilli "ifdown for $INTERFACE ($DEVICE)"
+    if [ "$INTERFACE" == "$CHILLIWAN" ]; then
+        /etc/init.d/chilli stop
+        logger -t chilli "Stopping chilli."
+
+        if [ "$WANFIREWALLENABLED" == 1 ]; then
+            # Makre firewall rule
+            echo "iptables -D FORWARD -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT"
+            logger -t firewall "iptables -D FORWARD -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT"
+            iptables -D FORWARD -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT
+        fi
+
+    else
+        logger -t chilli "$ACTION for $INTERFACE ($DEVICE). Chilli not changed."
+    fi
+fi
