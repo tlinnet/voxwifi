@@ -302,7 +302,7 @@ mkchilliconf() {
         uci set chilli_hotplug.@chilli[0].disabled='0'
 
         # Enable the wan to wait for ifup
-        DEFWAN="wan1"
+        DEFWAN="wan2"
         read -p "What is the interface WAN for the hotspot connection? [$DEFWAN]:" WAN
         WAN=${WAN:-$DEFWAN}
         echo -e "You entered: $WAN"
