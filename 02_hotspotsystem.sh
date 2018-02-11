@@ -246,16 +246,20 @@ mkchilliconf() {
         ##uci set chilli.@chilli[0].dns2='209.222.18.218'
         ## https://www.lifewire.com/free-and-public-dns-servers-2626062
         ## https://freedns.zone/en/ Surf freely. No DNS redirects. No Logging.
-        echo -e "\nSetting DHCP servers to client to use freedns. Surf freely. No DNS redirects. No Logging."
-        echo -e "Read: https://freedns.zone/en"
-        echo "uci set chilli.@chilli[0].dns1='37.235.1.174'"
-        echo "uci set chilli.@chilli[0].dns2='37.235.1.177'"
-        uci set chilli.@chilli[0].dns1='37.235.1.174'
-        uci set chilli.@chilli[0].dns2='37.235.1.177'
+        #echo -e "\nSetting DHCP servers to client to use freedns. Surf freely. No DNS redirects. No Logging."
+        #echo -e "Read: https://freedns.zone/en"
+        #echo "uci set chilli.@chilli[0].dns1='37.235.1.174'"
+        #echo "uci set chilli.@chilli[0].dns2='37.235.1.177'"
+        #uci set chilli.@chilli[0].dns1='37.235.1.174'
+        #uci set chilli.@chilli[0].dns2='37.235.1.177'
 
         # For OpenDNS and configurable blocking:
-        #uci set chilli.@chilli[0].dns1='208.67.222.222'
-        #uci set chilli.@chilli[0].dns2='208.67.220.220'
+        echo -e "\nSetting DHCP servers to client to use OpenDNS. To be able to control blocking."
+        echo -e "Read: https://www.opendns.com/home-internet-security/"
+        echo "uci set chilli.@chilli[0].dns1='208.67.222.222'"
+        echo "uci set chilli.@chilli[0].dns2='208.67.220.220'"
+        uci set chilli.@chilli[0].dns1='208.67.222.222'
+        uci set chilli.@chilli[0].dns2='208.67.220.220'
 
         # For OpenDNS and FamilyShield
         #uci set chilli.@chilli[0].dns1='208.67.222.123'
