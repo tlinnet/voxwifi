@@ -20,8 +20,6 @@ CHILLIWANDEV=`uci -P /var/state get network.${CHILLIWAN}.device`
 CHILLIWANNET=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f2 | cut -d" " -f1`
 CHILLIWANMASK=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f4`
 
-IPADDR=`uci get network.lan.ipaddr`
-
 if [ "$CHILLIDISABLED" == "1" ]; then
     logger -t chilli "Chilli is disabled, uci get chilli_hotplug.@chilli[0].disabled, will not start chilli. $ACTION $INTERFACE ($DEVICE)"
     logger -t chilli "CHILLIWAN=$CHILLIWAN, CHILLIWANUP=$CHILLIWANUP, WANFIREWALLENABLED=$WANFIREWALLENABLED. $ACTION $INTERFACE ($DEVICE)"
@@ -54,7 +52,6 @@ if [ "$ACTION" == "ifup" ]; then
             #iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT
             # Add it to firewall user file
             echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT" >> /etc/chilli/up.sh
-            echo "iptables -t nat -A PREROUTING -i br-lan -p udp --dport 53 -j DNAT --to $IPADDR" >> /etc/chilli/up.sh
         fi
 
     else
