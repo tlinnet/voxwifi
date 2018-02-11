@@ -253,6 +253,14 @@ mkchilliconf() {
         uci set chilli.@chilli[0].dns1='37.235.1.174'
         uci set chilli.@chilli[0].dns2='37.235.1.177'
 
+        # For OpenDNS and configurable blocking:
+        #uci set chilli.@chilli[0].dns1='208.67.222.222'
+        #uci set chilli.@chilli[0].dns2='208.67.220.220'
+
+        # For OpenDNS and FamilyShield
+        #uci set chilli.@chilli[0].dns1='208.67.222.123'
+        #uci set chilli.@chilli[0].dns2='208.67.220.123'
+
         # Setting DNS domain
         uci set chilli.@chilli[0].domain='key.chillispot.info'
 
@@ -313,7 +321,6 @@ mkchilliconf() {
         uci set chilli.@chilli[0].uamdomain="${A},${B},${C}"
         #C='apple.com,voxmeter.dk,catglobe.com,voxmeter.catglobe.com,voxtools.dk,datazymes.dk'
 
-
         ## Various debug and optimization values
         ## swap input and output octets
         uci set chilli.@chilli[0].swapoctets='1'
@@ -351,6 +358,19 @@ mkchilliconf() {
 
         ## Finish
         uci commit chilli_hotplug
+
+        ## Fix Re-direct not working for Android
+        # Mentioned here: https://stackoverflow.com/questions/35502333/sign-in-to-wi-fi-network-never-happens-on-android-devices-but-redirection-wor
+        # Make backup
+        cp /etc/chilli/functions /etc/chilli/functions_bck
+        # Check current
+        #cat /etc/chilli/functions | grep uamallowed
+        # Make a test before inline replacement
+        #cat /etc/chilli/functions | sed 's/www.coova.org//g' | grep uamallowed
+        # Make inline replacement
+        sed -i 's/www.coova.org//g' /etc/chilli/functions
+        # Make a test again
+        #cat /etc/chilli/functions | grep uamallowed
 
         ###########################
         echo -e "\nNOTE: You should NOT do: /etc/init.d/chilli enable"
