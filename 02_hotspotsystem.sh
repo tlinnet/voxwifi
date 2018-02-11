@@ -307,7 +307,7 @@ mkchilliconf() {
         ##uci set chilli.@chilli[0].uamdomain=".paypal.com,.paypalobjects.com,.worldpay.com,.rbsworldpay.com,.adyen.com,.hotspotsystem.com"
         A='paypal.com,paypalobjects.com,worldpay.com,rbsworldpay.com,adyen.com,hotspotsystem.com,geotrust.com,triodos.nl,asnbank.nl,knab.nl,regiobank.nl,snsbank.nl'
         B='doubleclick.net,googlevideo.com,googlesyndication.com,ytimg.com,youtube.com'
-        C='voxmeter.dk,catglobe.com,voxmeter.catglobe.com'
+        C='voxmeter.dk,catglobe.com,voxmeter.catglobe.com,voxtools.dk'
         uci set chilli.@chilli[0].uamdomain="${A},${B},${C}"
 
 
