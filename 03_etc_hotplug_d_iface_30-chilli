@@ -20,9 +20,6 @@ CHILLIWANDEV=`uci -P /var/state get network.${CHILLIWAN}.device`
 CHILLIWANNET=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f2 | cut -d" " -f1`
 CHILLIWANMASK=`ifconfig $CHILLIWANDEV | grep Mask | cut -d":" -f4`
 
-# Block android
-CLIENTS1=`nslookup clients1.google.com | awk '/^Address 2/{ print $3 ; exit }'`
-
 if [ "$CHILLIDISABLED" == "1" ]; then
     logger -t chilli "Chilli is disabled, uci get chilli_hotplug.@chilli[0].disabled, will not start chilli. $ACTION $INTERFACE ($DEVICE)"
     logger -t chilli "CHILLIWAN=$CHILLIWAN, CHILLIWANUP=$CHILLIWANUP, WANFIREWALLENABLED=$WANFIREWALLENABLED. $ACTION $INTERFACE ($DEVICE)"
@@ -55,7 +52,6 @@ if [ "$ACTION" == "ifup" ]; then
             #iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT
             # Add it to firewall user file
             echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT" >> /etc/chilli/up.sh
-            echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CLIENTS1}/24 -j REJECT" >> /etc/chilli/up.sh
         fi
 
     else
