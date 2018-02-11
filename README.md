@@ -249,3 +249,12 @@ Then activate new place
 cd voxwifi
 ./03_hotspotsystem_uplink.sh
 ```
+
+Walled garden
+
+```bash
+NASID=`uci get chilli.@chilli[0].radiusnasid`
+uci set chilli.@chilli[0].uamhomepage="https:\/\/customer.hotspotsystem.com\/customer\/index.php?nasid=${NASID}\&forward=1"
+uci commit chilli
+uci show chilli | grep uamhomepage
+```
