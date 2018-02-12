@@ -52,8 +52,6 @@ if [ "$ACTION" == "ifup" ]; then
             #iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT
             # Add it to firewall user file
             echo "iptables -I FORWARD 1 -s ${CHILLINET} -d ${CHILLIWANNET}/${CHILLIWANMASK} -j REJECT" >> /etc/chilli/up.sh
-            # Prevent Android not redirecting in Captive portal. 172.217.20.1 to 172.217.21.254 is blocked
-            echo "iptables -I FORWARD 1 -s ${CHILLINET} -d 172.217.20.1/23 -j REJECT" >> /etc/chilli/up.sh
         fi
 
     else
